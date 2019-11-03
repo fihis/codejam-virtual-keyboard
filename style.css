@@ -1,0 +1,6 @@
+.key {
+    cursor: pointer;
+}
+.key:hover {
+    background: brown;
+}
