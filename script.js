@@ -1,3 +1,10 @@
+//stopimmidiatepropagation - предотвращает выполнение последующих ивентов
+//стоппропагейшн - останавливает всплытие, но выполнение других ивентов продолжается
+//повесить ивент листенер кейдаун на инпут и сделать ивент.превентдефолт 
+
+//если е.таргет !=инпут то обработка как обычно
+
+
 window.onload = function () {
     
     document.querySelector('body').style.display = 'flex';
@@ -202,7 +209,7 @@ window.onload = function () {
             } else if (e.code === x.name) {
             x.div.style.background = 'blue';
             x.div.style.transform = 'scale(0.9)';
-            if (!input.hasFocus) {
+            if (e.target != input) { {
                 
 
                 input.value = input.value + x.enSpan.innerHTML;
