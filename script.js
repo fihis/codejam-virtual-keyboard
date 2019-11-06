@@ -6,7 +6,7 @@
 
 
 window.onload = function () {
-    
+    let lang = 'ru';
     document.querySelector('body').style.display = 'flex';
     document.querySelector('body').style.flexDirection = 'column';
     document.querySelector('body').style.justifyContent = 'center';
@@ -16,6 +16,7 @@ window.onload = function () {
     input.style.margin = '0 auto';
     input.style.fontSize = '20px';
     document.body.append(input);
+    input.readOnly = true;
 
     let keyboard = document.createElement('div');
     keyboard.className = "keyboard";
@@ -122,11 +123,15 @@ window.onload = function () {
             this.createKey = () => {
                 this.div = document.createElement('div');
                 this.div.className = 'key';
+                this.div.id = name;
                 this.parent.append(this.div);
     
                 this.enSpan = document.createElement('span');
                 this.enSpan.innerHTML = this.enSpanValue;
+                if (lang == 'en') {
                 this.enSpan.className = 'show';
+                this.curSpan = enSpan;}
+                else {this.enSpan.className = 'hide';}
                 this.div.append(this.enSpan);
 
                 this.enShiftSpan = document.createElement('span');
@@ -136,15 +141,64 @@ window.onload = function () {
 
                 this.ruSpan = document.createElement('span');
                 this.ruSpan.innerHTML = this.ruSpanValue;
-                this.ruSpan.className = 'hide';
+                if (lang == 'ru') {
+                    this.ruSpan.className = 'show';
+                    this.curSpan = ruSpan;}
+                    else {this.ruSpan.className = 'hide';}
                 this.div.append(this.ruSpan);
 
                 this.ruShiftSpan = document.createElement('span');
                 this.ruShiftSpan.innerHTML = this.ruShiftSpanValue;
                 this.ruShiftSpan.className = 'hide';
                 this.div.append(this.ruShiftSpan);
+                this.spans = this.div.children;
             }
-        
+            this.switchLanguage = () => {
+                if (lang == 'en') {
+
+                
+                
+                    this.enSpan.className = 'hide';
+                    this.ruSpan.className = 'show';
+                    this.curSpan = ruSpan;
+                    lang = 'ru';
+                
+                    
+                }
+                else {
+                    this.enSpan.className = 'show';
+                    this.ruSpan.className = 'hide';
+                    this.curSpan = enSpan;
+                    lang = 'en';
+                }
+                }
+            
+            this.switchCase = () => {
+                if (lang == 'en') {
+                    if (this.enSpan.className == 'show') {
+                        this.enSpan.className = 'hide';
+                        this.enShiftSpan.className = 'show';
+                        this.curSpan = enShiftSpan;
+                    } else {
+                        this.enSpan.className = 'show';
+                        this.curSpan = enSpan;
+                        this.enShiftSpan.className = 'hide';
+                }
+            }   else {
+
+                
+                
+                if (this.ruSpan.className == 'show') {
+                    this.ruSpan.className = 'hide';
+                    this.ruShiftSpan.className = 'show';
+                    this.curSpan = ruShiftSpan;
+                } else {
+                    this.ruSpan.className = 'show';
+                    this.curSpan = ruSpan;
+                    this.ruShiftSpan.className = 'hide';
+                }
+            }
+            }
             
 
         }
@@ -197,67 +251,167 @@ window.onload = function () {
     allRowKeys = firstRowKeys.concat(secondRowKeys, thirdRowKeys, fourthRowKeys, fifthRowKeys);
 
 
-    //поиск элемента по id
+    let pressed = new Set();
+
+    let shiftDown = false;
+    let capsOn = false;
+
+    // function switchLang(e) {
+           
+    //     pressed.add(e.code);
+    //     console.log(pressed);
+    //     for (let code of ['LeftShift', 'LeftAlt']) { // все ли клавиши из набора нажаты?
+    //         console.log('перебор '+code);
+    //         if (!pressed.has(code)) {
+    //           return;
+    //         }
+    //       }
+    //       pressed.clear();
+
+    //       allRowKeys.forEach( (x) => {
+    //           x.switchLanguage();
+    //           console.log('switched!')
+    //       }
+    //       )
+
+    //     };
+
+
     document.addEventListener('keydown', (e) => {
-        console.log(e.code);
+        console.log(e.code);  
         
+        // switchLang(e);
         
+
+
         allRowKeys.forEach((x) => {
-            if ((e.code === 'ShiftLeft') || (e.code === 'ShiftRight')){
-                x.enShiftSpan.className = 'show';
-                x.enSpan.className = 'hide';
-            } else if (e.code === x.name) {
-            x.div.style.background = 'blue';
-            x.div.style.transform = 'scale(0.9)';
-            if (e.target != input) { {
+            if (e.code === x.name) {
+                if (e.code === 'CapsLock') {                    
+                    if (!capsOn) {
+                        x.div.style.background = 'blue';
+                        x.div.style.transform = 'scale(0.9)';
+                        capsOn = true;
+                        for (let i = 13; i < allRowKeys.length; i++){
+                            this.console.log()
+                            allRowKeys[i].switchCase();
+                        }
+                    }  else
+                    if (capsOn){
+                        x.div.style.background = 'black';
+                        x.div.style.transform = 'scale(1)';
+                        capsOn = false;
+                        for (let i = 13; i < allRowKeys.length; i++){
+                            this.console.log()
+                            allRowKeys[i].switchCase();
+                        }
+                    }
+                    return;
+                }            
+                x.div.style.background = 'blue';
+                x.div.style.transform = 'scale(0.9)';
                 
 
-                input.value = input.value + x.enSpan.innerHTML;
-            }
-
-        }    
+                if (e.code === 'Tab') {
+                    e.preventDefault();
+                    input.value = input.value + '\t';
+                }
+                else
+                if (e.code === 'Enter') {
+                    e.preventDefault();
+                    input.value = input.value + '\n';
+                }
+                else 
+                if ((e.code === 'ShiftLeft') || (e.code === 'ShiftRight')) {
+                    if (!shiftDown) {
+                        shiftDown = true;
+                        allRowKeys.forEach((x) => {
+                            x.switchCase();
+                        })
+                    }
+                }  
+                else 
+                if (e.code === 'Delete'){
+                    e.preventDefault();
+                    input.value = input.value.substr(1, input.value.length);
+                    
+                }  
+                else 
+                if (e.code === 'Backspace'){
+                    e.preventDefault();
+                    input.value = input.value.substr(0, input.value.length - 1);                  
+                }  
+                else 
+                if ((e.code === 'ControlLeft') || (e.code === 'ControlRight')){
+                    //return;
+                }
+                else 
+                if ((e.code === 'AltLeft') || (e.code === 'AltRight')){
+                    //return;
+                }
+                else if (e.target != input) {
+                input.value = input.value + x.curSpan;
+                //console.log(x.curSpan);
+            }         
         }
+    }
         )
     }
     )
 
-//x.div.children    .hasClass('show'); собрать коллекцию чайлдов и если есть класс шоу - вывести иннерхтмл
+
 
     document.addEventListener('keyup', (e) => {
+        pressed.delete(e.code);
+        console.log(pressed);
         allRowKeys.forEach((x) => {
-            if ((e.code === 'ShiftLeft') || (e.code === 'ShiftRight')){
-                x.enShiftSpan.className = 'hide';
-                x.enSpan.className = 'show';
-            } else
             if (e.code === x.name) {
-            x.div.style.background = 'black';
-            x.div.style.transform = 'scale(1)';
-           
-        }    
+                if (e.code != 'CapsLock') {
+                    x.div.style.background = 'black';
+                    x.div.style.transform = 'scale(1)';
+                    if ((e.code === 'ShiftLeft') || (e.code === 'ShiftRight')){
+                        shiftDown = false;
+                        allRowKeys.forEach((x) => {
+                        x.switchCase();
+                        })
+                    }
+                }
+                
+                
+            }    
         }
         )
     }
     )
     
     document.addEventListener('mousedown', (e) => {
-        if (e.target.className === 'key') {
-            e.target.style.background = 'red';
-            e.target.style.transform = 'scale(0.9)';
-            console.log(e.target);
-            input.value = input.value + e.target.firstChild.innerHTML;
+        let event = new Event('keydown');
+        //console.log(e.target.id);
+        event.code = e.target.id;
+        document.dispatchEvent(event);
+        // if (e.target.className === 'key') {
+        //     e.target.style.background = 'red';
+        //     e.target.style.transform = 'scale(0.9)';
+        //     console.log(e.target);
+            
+        //     input.value = input.value + e.target.getElementsByClassName('show')[0].innerHTML;
         
-        }
+        // }
         
         
     })
 
-    document.addEventListener('mouseup', (e) => {
-        if  (e.target.className === 'key') {
-            e.target.style.background = 'black';
-            e.target.style.transform = 'scale(1)';
-        }
+     document.addEventListener('mouseup', (e) => {
+        let event = new Event('keyup');
+        //console.log(e.target.id);
+        event.code = e.target.id;
+        document.dispatchEvent(event);
+
+    //     if  (e.target.className === 'key') {
+    //         e.target.style.background = 'black';
+    //         e.target.style.transform = 'scale(1)';
+    //     }
         
-    })
+     })
 
    
     
