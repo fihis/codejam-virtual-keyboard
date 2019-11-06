@@ -6,7 +6,13 @@
 
 
 window.onload = function () {
-    let lang = 'ru';
+    console.log(localStorage.getItem('language'));
+    if (localStorage.getItem('language') === null) {
+        localStorage.setItem('language', 'en');
+        console.log(localStorage.getItem('language'));
+    }
+    //localStorage.setItem('language', 'en');
+    let lang = localStorage.getItem('language');
     document.querySelector('body').style.display = 'flex';
     document.querySelector('body').style.flexDirection = 'column';
     document.querySelector('body').style.justifyContent = 'center';
@@ -154,24 +160,37 @@ window.onload = function () {
                 this.spans = this.div.children;
             }
             this.switchLanguage = () => {
-                if (lang == 'en') {
-
-                
-                
+                if (this.enSpan.className == 'show') {
                     this.enSpan.className = 'hide';
                     this.ruSpan.className = 'show';
                     this.curSpan = ruSpan;
+                    localStorage.setItem('language', 'ru');
                     lang = 'ru';
-                
-                    
-                }
-                else {
-                    this.enSpan.className = 'show';
+
+                } else if (this.ruSpan.className == 'show') {
                     this.ruSpan.className = 'hide';
+                    this.enSpan.className = 'show';
                     this.curSpan = enSpan;
+                    localStorage.setItem('language', 'en');
+                    lang = 'en';
+
+                } else if (this.enShiftSpan.className == 'show') {
+                    this.enShiftSpan.className = 'hide';
+                    this.ruShiftSpan.className = 'show';
+                    this.curSpan = ruShiftSpan;
+                    localStorage.setItem('language', 'ru');
+                    lang = 'ru';
+
+                } else if (this.ruShiftSpan.className == 'show') {
+                    this.ruShiftSpan.className = 'hide';
+                    this.enShiftSpan.className = 'show';
+                    this.curSpan = enShiftSpan;
+                    localStorage.setItem('language', 'en');
                     lang = 'en';
                 }
-                }
+                console.log(lang);
+            }
+                
             
             this.switchCase = () => {
                 if (lang == 'en') {
@@ -234,9 +253,9 @@ window.onload = function () {
         fourthRowKeys[i].createKey();      
     }
     fourthRowKeys[0].div.style.width = '130px';
-    fourthRowKeys[0].div.style.fontSize = '24px';
+    fourthRowKeys[0].div.style.fontSize = '20px';
     fourthRowKeys[fourthRow.length - 1].div.style.width = '130px';
-    fourthRowKeys[fourthRow.length - 1].div.style.fontSize = '24px';
+    fourthRowKeys[fourthRow.length - 1].div.style.fontSize = '20px';
 
     for (let i = 0; i < fifthRow.length; i++) {
         fifthRowKeys[i] = new Key(fifthRow[i][0],fifthRow[i][1],fifthRow[i][2],fifthRow[i][3],fifthRow[i][4],row[4]);
@@ -274,18 +293,22 @@ window.onload = function () {
     //       }
     //       )
 
-    //     };
+    //     };Q
 
 
     document.addEventListener('keydown', (e) => {
-        console.log(e.code);  
+        console.log(e.code); 
+        
+        //console.log(e); 
         
         // switchLang(e);
         
 
 
         allRowKeys.forEach((x) => {
+            
             if (e.code === x.name) {
+                
                 if (e.code === 'CapsLock') {                    
                     if (!capsOn) {
                         x.div.style.background = 'blue';
@@ -309,7 +332,14 @@ window.onload = function () {
                 }            
                 x.div.style.background = 'blue';
                 x.div.style.transform = 'scale(0.9)';
-                
+
+                if ((e.altKey) && (e.shiftKey)){
+                    
+                    allRowKeys.forEach((x) => {
+                        x.switchLanguage();
+                    })
+                    
+                }
 
                 if (e.code === 'Tab') {
                     e.preventDefault();
@@ -342,11 +372,11 @@ window.onload = function () {
                 }  
                 else 
                 if ((e.code === 'ControlLeft') || (e.code === 'ControlRight')){
-                    //return;
+                    e.preventDefault();
                 }
                 else 
                 if ((e.code === 'AltLeft') || (e.code === 'AltRight')){
-                    //return;
+                    e.preventDefault();
                 }
                 else if (e.target != input) {
                 input.value = input.value + x.curSpan;
@@ -362,7 +392,7 @@ window.onload = function () {
 
     document.addEventListener('keyup', (e) => {
         pressed.delete(e.code);
-        console.log(pressed);
+        //console.log(pressed);
         allRowKeys.forEach((x) => {
             if (e.code === x.name) {
                 if (e.code != 'CapsLock') {
