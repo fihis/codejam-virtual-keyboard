@@ -308,8 +308,8 @@ window.onload = function () {
                                         if ((e.code === 'AltLeft') || (e.code === 'AltRight')) {
                                             e.preventDefault();
                                         }
-                                        else //if (e.target != input) {
-                                            {input.value = input.value + x.curSpan;
+                                        else {
+                                            input.value = input.value + x.curSpan;
                                         }
             }
         }
